@@ -1,9 +1,14 @@
-from app import app
+from flask import Blueprint
 from flask import jsonify, request
 from db import criar_conexao
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
-@app.route('/games', methods = ['GET'])
+views_bp = Blueprint("views", __name__, url_prefix="/games")
+
+@views_bp.route('', methods = ['GET'])
+@jwt_required()
 def get_games():
+    current_user = get_jwt_identity()
     con = criar_conexao()
     cursor = con.cursor(dictionary=True)
 
@@ -15,7 +20,7 @@ def get_games():
     print(games)
     return jsonify(games), 200
 
-@app.route('/games/<int:id>', methods = ['GET'])
+@views_bp.route('/<int:id>', methods = ['GET'])
 def get_game(id):
 
 
@@ -32,7 +37,7 @@ def get_game(id):
         return jsonify({"msg":"Game not found"}), 404
     return jsonify(game[0]), 200
 
-@app.route('/games', methods=['POST'])
+@views_bp.route('', methods=['POST'])
 def add_games():
     dados = request.json
 
@@ -57,7 +62,7 @@ def add_games():
 
     return jsonify({"game_id" : new_id,"game_name": game_name, "game_slug": game_slug, "launch_date": launch_date}), 201
 
-@app.route('/games/<int:id>', methods=['PUT'])
+@views_bp.route('/<int:id>', methods=['PUT'])
 def update_game(id): 
 
 
@@ -84,7 +89,7 @@ def update_game(id):
 
     return jsonify({"game_id": id, "game_name": game_name, "game_slug": game_slug, "launch_date": launch_date}), 200
 
-@app.route('/games/<int:id>', methods=['DELETE'])
+@views_bp.route('/<int:id>', methods=['DELETE'])
 def delete_game(id): 
     
  

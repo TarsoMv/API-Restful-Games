@@ -6,7 +6,7 @@ def criar_conexao():
         con=mysql.connector.connect(
             host='localhost',
             user='root',
-            password='XXXX',
+            password='2080',
             database='games'
         )
         return con
